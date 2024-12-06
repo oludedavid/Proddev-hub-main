@@ -13,11 +13,6 @@ const dashboardSchema = new mongoose.Schema(
       enum: ["admin", "tutor", "student"],
       required: true,
     },
-    theme: {
-      type: String,
-      enum: ["light", "dark"],
-      default: "light",
-    },
   },
   { timestamps: true }
 );

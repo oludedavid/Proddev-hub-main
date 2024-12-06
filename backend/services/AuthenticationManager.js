@@ -1,6 +1,7 @@
 import bcrypt from "bcrypt";
 import User from "../models/User.js";
 import TempUser from "../models/TempUser.js";
+import Dashboard from "../models/Dashboard.js";
 import nodemailer from "nodemailer";
 import axios from "axios";
 import jwt from "jsonwebtoken";
@@ -85,7 +86,12 @@ class Register {
    * @param {object} res - The response object to send back a result or error message.
    */
   signup = async (req, res) => {
-    const { fullName, email, password } = req.body;
+    const { fullName, email, password, role } = req.body;
+
+    const validRoles = ["guest", "student", "tutor", "admin"];
+    if (!validRoles.includes(role)) {
+      return res.status(400).json({ error: "Invalid role provided" });
+    }
 
     try {
       const doesUserExist = await User.findOne({ email });
@@ -101,6 +107,7 @@ class Register {
         fullName,
         email,
         password: hashedPassword,
+        role,
       });
 
       await tempUser.save();
@@ -158,9 +165,16 @@ class Register {
         email: tempUser.email,
         password: tempUser.password,
         isVerified: true,
+        role: tempUser.role,
       });
 
       await newUser.save();
+
+      const userDashboard = new Dashboard({
+        owner: newUser._id,
+        role: newUser.role,
+      });
+
       await TempUser.deleteOne({ email: decoded.email });
 
       res.status(200).json({
