@@ -15,9 +15,9 @@ const router = express.Router();
  * @returns {Object} Filtered and paginated courses.
  */
 router.get("/courses/filter", async (req, res) => {
-  const filters = req.query; // Get filters from query params
-  const page = req.query.page || 1; // Default to page 1 if not provided
-  const limit = req.query.limit || 10; // Default to 10 if not provided
+  const filters = req.query;
+  const page = req.query.page || 1;
+  const limit = req.query.limit || 10;
 
   try {
     const courseFilterManager = new CourseFilterManager();
